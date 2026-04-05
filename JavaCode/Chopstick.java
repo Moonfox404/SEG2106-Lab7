@@ -1,22 +1,41 @@
 public class Chopstick {
 	private int ID;
-// hint: use a local variable to indicate whether the chopstick is free 
-//                        (lying on the table), e.g.  private boolean free;
+	private boolean free;
 
 	Chopstick(int ID) {
-		  this.ID = ID;
-	
+    this.ID = ID;
+    this.free = true;
 	}
 	
 	synchronized void take() {
-	
+    while (!free) {
+      try {
+        System.out.println("Chopstick " + ID + " is in use. Waiting.");
+        wait();
+      } 
+      catch (InterruptedException e) {
+        System.out.println(e);
+        break;
+      }
+    }
+
+    if (!free) {
+      throw new IllegalStateException();
+    }
+
+    this.free = false;
 	}
 	
 	synchronized void release() {
-	
+    if (free) {
+      throw new IllegalStateException();
+    }
+
+    this.free = true;
+    notify();
 	}
 	    
 	public int getID() {
-	    return(ID);
+	  return(ID);
 	}
 }
