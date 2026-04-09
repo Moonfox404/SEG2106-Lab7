@@ -38,29 +38,62 @@ public class Philosopher extends Thread {
 			// Tell the GUI I am hungry...
 			table.isHungry(ID);
 			
-			// Let's try to get the left chopstick
-			System.out.println(getName()+" wants left chopstick");
-			left.take();
+			/*
+			 * ADD A WHILE OVER THIS ENTIRE B
+			 */
 			
-			// Tell the GUI that I took the left chopstick
-			table.takeChopstick(ID, left.getID());
-			System.out.println(getName()+" got left chopstick");
-			
-			// I'll wait a bit before I try to get the next chopstick (it's philosopher's etiquette)
-			try {
-				sleep(timeNextFork);
-			} catch(InterruptedException e) {
-				System.out.println(e);
-			} 
-			
-			// Ok, enough etiquette nonesense, now I need my right chopstick
-			System.out.println(getName()+" wants right chopstick");
-			right.take();
-
-			// Got it!
-			table.takeChopstick(ID, right.getID());
-			System.out.println(getName()+" got right chopstick");
-			
+			boolean leftResult = false;
+			boolean rightResult = false;
+			while(!leftResult) {
+				// Let's try to get the left chopstick
+				System.out.println(getName()+" wants left chopstick");
+				leftResult = left.take();
+				if(!leftResult) {
+					// I'll wait a bit before I try to get the chopstick again (it's philosopher's etiquette)
+					System.out.println(getName()+" gave up on left chopstick");
+					try {
+						sleep(timeNextFork);
+						continue;
+					} catch(InterruptedException e) {
+						System.out.println(e);
+					} 
+				}
+				
+				//if philosopher did get the chopstick
+				else {
+					// Tell the GUI that I took the left chopstick
+					table.takeChopstick(ID, left.getID());
+					System.out.println(getName()+" got left chopstick");
+					// I'll wait a bit before I try to get the next chopstick (it's philosopher's etiquette)
+					try {
+						sleep(timeNextFork);
+					} catch(InterruptedException e) {
+						System.out.println(e);
+					} 
+				}
+				
+				// Ok, enough etiquette nonesense, now I need my right chopstick
+				System.out.println(getName()+" wants right chopstick");
+				rightResult = right.take();
+				if(!rightResult) {
+					// I'll wait a bit before I try to get the chopstick again (it's philosopher's etiquette)
+						table.releaseChopstick(ID, left.getID());
+					    left.release();
+					    System.out.println(getName()+" dropped left chopstick (right timed out)");
+					    leftResult = false;
+					try {
+						sleep(timeNextFork);
+						continue;
+					} catch(InterruptedException e) {
+						System.out.println(e);
+					} 
+				}
+				else {
+					// Got it!
+					table.takeChopstick(ID, right.getID());
+					System.out.println(getName()+" got right chopstick");
+				}
+			}
 			// Sweet taste of steamed rice....
 			System.out.println(getName()+" eats"); 
 			try {
