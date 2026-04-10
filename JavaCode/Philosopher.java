@@ -2,6 +2,8 @@ public class Philosopher extends Thread {
 	private GraphicTable table;
 	private Chopstick left;
 	private Chopstick right;
+	private Chopstick first;
+	private Chopstick second;
 	private int ID;
 	final int timeThink_max = 5000;
 	final int timeNextFork = 100;
@@ -12,6 +14,14 @@ public class Philosopher extends Thread {
 		this.table = table;
 		this.left = left;
 		this.right = right;
+		if(ID % 2==0){
+			this.first = right;
+			this.second = left;
+		}
+		else{
+			this.first = left;
+			this.second = right;
+		}
 		setName("Philosopher "+ID);
 	}
 	
@@ -38,13 +48,13 @@ public class Philosopher extends Thread {
 			// Tell the GUI I am hungry...
 			table.isHungry(ID);
 			
-			// Let's try to get the left chopstick
-			System.out.println(getName()+" wants left chopstick");
-			left.take();
+			// Let's try to get the first chopstick
+			System.out.println(getName()+" wants first chopstick");
+			first.take();
 			
-			// Tell the GUI that I took the left chopstick
-			table.takeChopstick(ID, left.getID());
-			System.out.println(getName()+" got left chopstick");
+			// Tell the GUI that I took the first chopstick
+			table.takeChopstick(ID, first.getID());
+			System.out.println(getName()+" got first chopstick");
 			
 			// I'll wait a bit before I try to get the next chopstick (it's philosopher's etiquette)
 			try {
@@ -53,13 +63,13 @@ public class Philosopher extends Thread {
 				System.out.println(e);
 			} 
 			
-			// Ok, enough etiquette nonesense, now I need my right chopstick
-			System.out.println(getName()+" wants right chopstick");
-			right.take();
+			// Ok, enough etiquette nonesense, now I need my second chopstick
+			System.out.println(getName()+" wants second chopstick");
+			second.take();
 
 			// Got it!
-			table.takeChopstick(ID, right.getID());
-			System.out.println(getName()+" got right chopstick");
+			table.takeChopstick(ID, second.getID());
+			System.out.println(getName()+" got second chopstick");
 			
 			// Sweet taste of steamed rice....
 			System.out.println(getName()+" eats"); 
